@@ -7,22 +7,157 @@
 
 <body>
 
-<header>
-  <h1>SMART ENERGY METER</h1>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="pages/dashboard.html">Dashboard</a>
-    <a href="pages/about.html">About</a>
-    <a href="pages/contact.html">Contact</a>
-  </nav>
+<header class="topbar">
+  <div class="left">
+    <span class="back-btn" onclick="goBack()">←</span>
+  </div>
+
+  <div class="center">
+    <h1>Smart Energy Monitoring System</h1>
+  </div>
+
+  <div class="right">
+    <span class="profile-icon" onclick="toggleMenu()">👤</span>
+  </div>
 </header>
 
+<div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleMenu()"></div>
+
+<div id="sidebar" class="sidebar">
+  <div class="sidebar-top">
+    <button class="close-btn" onclick="toggleMenu()">×</button>
+
+    <div class="user-box">
+      <div class="avatar">
+        <img id="profilePic" src="https://via.placeholder.com/100" alt="Profile Photo">
+      </div>
+
+      <div class="user-details">
+        <h3 id="userName">Guest User</h3>
+        <p id="userPhone">📞 Not added</p>
+        <p id="userEmail">✉ Not added</p>
+      </div>
+    </div>
+
+    <label class="upload-label">
+      Change Photo
+      <input type="file" accept="image/*" onchange="uploadImage(event)">
+    </label>
+  </div>
+
+  <div class="menu-section">
+    <h4>Energy Services</h4>
+    <a href="pages/dashboard.html">Dashboard <span>›</span></a>
+    <a href="pages/about.html">About Project <span>›</span></a>
+    <a href="pages/contact.html">Contact Team <span>›</span></a>
+  </div>
+
+  <div class="menu-section">
+    <h4>Account</h4>
+    <button onclick="openProfile()">Profile Details <span>›</span></button>
+    <button onclick="openLogin()">Login <span>›</span></button>
+    <button onclick="logoutUser()">Logout <span>›</span></button>
+  </div>
+
+  <div class="menu-section">
+    <h4>Help & Settings</h4>
+    <label class="language-row">
+      Language
+      <select>
+        <option>English</option>
+        <option>Hindi</option>
+        <option>Marathi</option>
+      </select>
+    </label>
+    <button>Help & Support <span>›</span></button>
+  </div>
+</div>
+
+<div id="profileModal" class="modal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeProfile()">×</button>
+
+    <h2>Edit Profile</h2>
+
+    <input type="text" id="profileName" placeholder="Full Name">
+    <input type="text" id="profilePhone" placeholder="Phone Number">
+    <input type="email" id="profileEmail" placeholder="Email Address">
+
+    <button class="save-btn" onclick="saveProfile()">Save Profile</button>
+  </div>
+</div>
+
+<div id="loginModal" class="modal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeLogin()">×</button>
+
+    <h2>Login</h2>
+
+    <input type="text" id="loginName" placeholder="Enter Name">
+    <input type="password" id="loginPassword" placeholder="Enter Password">
+
+    <button class="save-btn" onclick="loginUser()">Login</button>
+  </div>
+</div>
+
 <section class="hero">
-  <h2>Welcome to Smart Energy Meter</h2>
-  <p>Monitor usage, analyze patterns, and predict electricity consumption.</p>
+  <h2>Smart Energy Monitoring System</h2>
+  <p>Track, analyze and optimize your electricity usage with AI-powered insights.</p>
+
+  <div class="cta-buttons">
+    <a href="pages/dashboard.html" class="btn primary">View Dashboard</a>
+    <a href="pages/about.html" class="btn secondary">Learn More</a>
+    <a href="pages/contact.html" class="btn secondary">Contact</a>
+  </div>
 </section>
 
-<script src="js/main.js"></script>
+<section class="features">
+  <h2>Key Features</h2>
 
+  <div class="grid">
+    <div class="card">
+      <h3>⚡ Real-time Monitoring</h3>
+      <p>Track your electricity usage live.</p>
+    </div>
+
+    <div class="card">
+      <h3>📊 AI Prediction</h3>
+      <p>Estimate future consumption and cost.</p>
+    </div>
+
+    <div class="card">
+      <h3>📱 Remote Access</h3>
+      <p>Monitor usage from anywhere anytime.</p>
+    </div>
+
+    <div class="card">
+      <h3>🔔 Alerts</h3>
+      <p>Get notified for high energy usage.</p>
+    </div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stat-box">
+    <h2>24/7</h2>
+    <p>Monitoring</p>
+  </div>
+
+  <div class="stat-box">
+    <h2>30%</h2>
+    <p>Energy Saving</p>
+  </div>
+
+  <div class="stat-box">
+    <h2>AI</h2>
+    <p>Prediction</p>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Smart Energy Meter |</p>
+</footer>
+
+<script src="js/main.js"></script>
 </body>
 </html>

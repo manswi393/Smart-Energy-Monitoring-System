@@ -7,35 +7,95 @@
 
 <body>
 
-<header>
-  <h1>Energy Dashboard</h1>
-  <a href="../index.html">Home</a>
+<header class="topbar">
+  <div class="left">
+    <span class="back-btn" onclick="goBack()">←</span>
+  </div>
+
+  <div class="center">
+    <h1>Energy Dashboard</h1>
+  </div>
+
+  <div class="right">
+    <span class="profile-icon" onclick="toggleMenu()">👤</span>
+  </div>
 </header>
 
-<div class="dashboard">
+<section class="dashboard-page">
 
-  <div class="card">
-    <h3>Power</h3>
-    <p id="power">--</p>
+  <div class="dashboard-hero">
+    <h2>Live Energy Monitoring</h2>
+    <p>Real-time voltage, current, power, energy usage and bill prediction</p>
   </div>
 
-  <div class="card">
-    <h3>Current</h3>
-    <p id="current">--</p>
+  <div class="dashboard-grid">
+
+    <div class="dash-card">
+      <div class="dash-icon">🔋</div>
+      <h3>Voltage</h3>
+      <p id="voltage">230.00 V</p>
+      <span>Supply voltage</span>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-icon">⚡</div>
+      <h3>Power</h3>
+      <p id="power">-- W</p>
+      <span>Live load usage</span>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-icon">🔌</div>
+      <h3>Current</h3>
+      <p id="current">-- A</p>
+      <span>Measured current</span>
+    </div>
+
+    <div class="dash-card">
+      <div class="dash-icon">🪫</div>
+      <h3>Energy</h3>
+      <p id="energy">-- Watt</p>
+      <span>Total consumption</span>
+    </div>
+
+    <div class="dash-card highlight">
+      <div class="dash-icon">💰</div>
+      <h3>Prediction</h3>
+      <p id="prediction">Rs --</p>
+      <span>Estimated bill</span>
+    </div>
+
   </div>
 
-  <div class="card">
-    <h3>Energy</h3>
-    <p id="energy">--</p>
+  <div class="graph-card">
+    <h3>Increasing Load Graph</h3>
+    <p>Live load variation according to power consumption</p>
+    <canvas id="loadChart"></canvas>
   </div>
 
-  <div class="card">
-    <h3>Prediction</h3>
-    <p id="prediction">--</p>
+  <div class="dashboard-lower">
+    <div class="usage-card">
+      <h3>Energy Usage Status</h3>
+      <div class="usage-bar">
+        <div class="usage-fill" id="usageFill"></div>
+      </div>
+      <p id="usageStatus">Waiting for live data...</p>
+    </div>
+
+    <div class="tips-card">
+      <h3>Smart Saving Tips</h3>
+      <ul>
+        <li>Turn off appliances when not in use.</li>
+        <li>Monitor high-power devices regularly.</li>
+        <li>Use prediction data to control monthly bills.</li>
+      </ul>
+    </div>
   </div>
 
-</div>
+</section>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../js/main.js"></script>
 <script src="../js/dashboard.js"></script>
 
 </body>

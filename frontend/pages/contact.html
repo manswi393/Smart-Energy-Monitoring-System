@@ -1,19 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Contact</title>
+  <title>Contact Us</title>
   <link rel="stylesheet" href="../css/styles.css">
 </head>
 
 <body>
 
-<header>
-  <h1>Contact Us</h1>
+<header class="topbar">
+  <div class="left">
+    <span class="back-btn" onclick="goBack()">←</span>
+  </div>
+
+  <div class="center">
+    <h1>Contact Us</h1>
+  </div>
+
+  <div class="right">
+    <span class="profile-icon" onclick="toggleMenu()">👤</span>
+  </div>
 </header>
 
-<div class="hero">
-  <p>Email: support@energymeter.com</p>
-</div>
+<section class="contact-page">
 
+  <div class="mentor-card">
+    <img src="../images/guide.jpg" alt="Mentor Photo" class="editable-photo" onclick="changeContactPhoto(this)">
+    <div>
+      <h2>Project Mentor</h2>
+      <h3>Kunal Kulkarni</h3>
+      <p>Guiding and supporting the Smart Energy Meter project.</p>
+    </div>
+  </div>
+
+  <h2 class="section-title">Team Members</h2>
+
+  <table class="team-table">
+    <tr>
+      <th>Photo</th>
+      <th>Name</th>
+      <th>Contact Number</th>
+      <th>Email ID</th>
+    </tr>
+
+    <tr>
+      <td>
+        <img src="../images/shreeya.jpg" alt="Shreeya Prapte" class="editable-photo" onclick="changeContactPhoto(this)">
+      </td>
+      <td>Shreeya Prapte</td>
+      <td>9422189683</td>
+      <td>shreeya@gmail.com</td>
+    </tr>
+
+    <tr>
+      <td>
+        <img src="../images/pinak.jpg" alt="Pinak Sapre" class="editable-photo" onclick="changeContactPhoto(this)">
+      </td>
+      <td>Pinak Sapre</td>
+      <td>9657641258</td>
+      <td>pinak@gmail.com</td>
+    </tr>
+
+    <tr>
+      <td>
+        <img src="../images/manswi.jpg" alt="Manswi Ajankar" class="editable-photo" onclick="changeContactPhoto(this)">
+      </td>
+      <td>Manswi Ajankar</td>
+      <td>930446396</td>
+      <td>manswi@gmail.com</td>
+    </tr>
+  </table>
+
+</section>
+
+<script src="../js/main.js"></script>
 </body>
 </html>

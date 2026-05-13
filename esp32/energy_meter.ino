@@ -1,131 +1,210 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
-#include <math.h>   // ✅ FIX for sqrt()
+#include <WiFi.h>
+#include <HTTPClient.h>
 
-#define SDA_PIN 21
-#define SCL_PIN 22
-
+// ================= LCD =================
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
-int sensorPin = 34;
+// ================= WIFI =================
+const char* ssid = "Shreeya's A14";
+const char* password = "Shreeya08";
+const char* serverURL = "http://10.234.196.141:3000/data";
 
+// ================= PINS =================
+const int currentPin = 34;
+const int voltagePin = 35;
+
+// ================= CONSTANTS =================
+const float sensitivity = 0.185;   // ACS712 5A
+const float rate = 8.0;
+
+// ================= VARIABLES =================
 float current = 0;
+float voltage = 0;
 float power = 0;
-float smoothPower = 0;
 float energy = 0;
+float predictedCost = 0;
 
-float offset = 0;
-float rate = 8.0;
+float currentOffset = 0;
+float voltageOffset = 0;
 
 unsigned long lastTime = 0;
 
-void setup() {
-  Serial.begin(115200);
-  Wire.begin(SDA_PIN, SCL_PIN);
+const int sampleCount = 1000;
 
-  lcd.begin(16, 2);   // ✅ safer than lcd.init()
-  lcd.backlight();
+// ================= OFFSET CALIBRATION =================
+void calibrateOffsets() {
+  long sumC = 0;
+  long sumV = 0;
 
-  // Offset calibration
-  long sum = 0;
-  for (int i = 0; i < 500; i++) {
-    sum += analogRead(sensorPin);
-    delay(2);
-  }
-  offset = sum / 500.0;
-
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Energy Meter");
-  delay(2000);
-}
-
-void loop() {
-
-  long sum = 0;
-
-  for (int i = 0; i < 200; i++) {
-    int value = analogRead(sensorPin);
-    float diff = value - offset;
-    sum += (long)(diff * diff);   // ✅ avoid warning
+  for (int i = 0; i < 2000; i++) {
+    sumC += analogRead(currentPin);
+    sumV += analogRead(voltagePin);
     delay(1);
   }
 
-  float rms = sqrt(sum / 200.0);
-  float voltage = rms * (3.3 / 4095.0);
+  currentOffset = sumC / 2000.0;
+  voltageOffset = sumV / 2000.0;
 
-  current = voltage / 0.185;
+  Serial.print("Current Offset: ");
+  Serial.println(currentOffset);
 
-  // Noise filtering
-  if (current < 0.02) current = 0;
-  if (current > 1.0) current = 0;
+  Serial.print("Voltage Offset: ");
+  Serial.println(voltageOffset);
+}
 
-  power = 230.0 * current;
+// ================= CURRENT =================
+float getCurrent() {
+  float sumSq = 0;
 
-  // Smoothing filter
-  smoothPower = (0.7 * smoothPower) + (0.3 * power);
+  for (int i = 0; i < sampleCount; i++) {
+    float adc = analogRead(currentPin);
 
-  // Energy calculation
+    // Remove offset
+    float centered = (adc - currentOffset) * (3.3 / 4095.0);
+
+    sumSq += centered * centered;
+  }
+
+  float rms = sqrt(sumSq / sampleCount);
+
+  float currentValue = rms / sensitivity;
+
+  return currentValue;
+}
+
+// ================= VOLTAGE =================
+float getVoltage() {
+  float sumSq = 0;
+
+  for (int i = 0; i < sampleCount; i++) {
+    float adc = analogRead(voltagePin);
+
+    // Remove offset
+    float centered = (adc - voltageOffset) * (3.3 / 4095.0);
+
+    sumSq += centered * centered;
+  }
+
+  float rms = sqrt(sumSq / sampleCount);
+
+  // Scaling factor (you may tune later)
+  float realVoltage = rms * 650;
+
+  return realVoltage;
+}
+
+// ================= SETUP =================
+void setup() {
+  Serial.begin(115200);
+  Wire.begin(21, 22);
+
+  lcd.init();
+  lcd.backlight();
+
+  lcd.print("Connecting WiFi");
+
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.println("Connecting...");
+  }
+
+  Serial.println("WiFi Connected");
+  lcd.clear();
+  lcd.print("WiFi Connected");
+
+  delay(1000);
+
+  // 🔥 CALIBRATE OFFSETS (VERY IMPORTANT)
+  lcd.clear();
+  lcd.print("Calibrating...");
+  calibrateOffsets();
+
+  lcd.clear();
+  lcd.print("Meter Ready");
+
+  lastTime = millis();
+}
+
+// ================= LOOP =================
+void loop() {
+
+  // -------- SENSOR READINGS --------
+  current = getCurrent();
+  voltage = getVoltage();
+
+  // -------- POWER --------
+  float powerFactor = 0.7;
+  power = voltage * current * powerFactor;
+
+  // -------- ENERGY --------
   if (millis() - lastTime >= 1000) {
     lastTime = millis();
-    energy += (smoothPower / 1000.0) / 3600.0;
+    energy += (power / 1000.0) * (1.0 / 3600.0);
   }
 
-  // Prediction
-  float predictedCost = 0;
-  if (smoothPower > 7) {
-    float monthlyUnits = (smoothPower / 1000.0) * 24 * 30;
-    predictedCost = monthlyUnits * rate;
-  }
+  // -------- COST --------
+  float monthlyUnits = (power / 1000.0) * 24 * 30;
+  predictedCost = monthlyUnits * rate;
 
-  // ================= LCD DISPLAY =================
-
-  // Screen 1
+  // ================= LCD =================
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("P:");
-  lcd.print(smoothPower, 1);
-  lcd.print("W ");
-
-  lcd.print("I:");
+  lcd.print("V:");
+  lcd.print(voltage, 0);
+  lcd.print(" I:");
   lcd.print(current, 2);
-  lcd.print("A");
 
   lcd.setCursor(0, 1);
-  lcd.print("Live Load");
+  lcd.print("P:");
+  lcd.print(power, 0);
+  lcd.print("W");
 
-  delay(2000);
+  delay(1500);
 
-  // Screen 2
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Energy:");
-  lcd.print(energy, 3);
-  lcd.print("kWh");
-
-  lcd.setCursor(0, 1);
-  lcd.print("Usage");
-
-  delay(2000);
-
-  // Screen 3
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Predicted Bill");
+  lcd.print("E:");
+  lcd.print(energy, 4);
 
   lcd.setCursor(0, 1);
   lcd.print("Rs:");
   lcd.print(predictedCost, 0);
 
-  delay(2000);
+  delay(1500);
 
-  // Serial Debug
-  Serial.print("Current: ");
-  Serial.print(current);
-  Serial.print(" A | Power: ");
-  Serial.print(smoothPower);
-  Serial.print(" W | Energy: ");
-  Serial.print(energy, 6);
-  Serial.print(" kWh | Predicted Cost: ");
-  Serial.println(predictedCost);
+  // ================= WIFI SEND =================
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+
+    http.begin(serverURL);
+    http.addHeader("Content-Type", "application/json");
+
+    String json = "{";
+    json += "\"current\":" + String(current, 3) + ",";
+    json += "\"voltage\":" + String(voltage, 1) + ",";
+    json += "\"power\":" + String(power, 2) + ",";
+    json += "\"energy\":" + String(energy, 5) + ",";
+    json += "\"predictedCost\":" + String(predictedCost, 2);
+    json += "}";
+
+    Serial.println(json);
+
+    int httpResponseCode = http.POST(json);
+
+    Serial.print("HTTP Response: ");
+    Serial.println(httpResponseCode);
+
+    http.end();
+  }
+
+  // ================= SERIAL =================
+  Serial.print("V: "); Serial.print(voltage);
+  Serial.print(" I: "); Serial.print(current);
+  Serial.print(" P: "); Serial.print(power);
+  Serial.print(" E: "); Serial.print(energy);
+  Serial.print(" Rs: "); Serial.println(predictedCost);
 }

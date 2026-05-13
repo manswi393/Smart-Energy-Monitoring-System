@@ -1,19 +1,83 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>About</title>
+  <title>About Us</title>
   <link rel="stylesheet" href="../css/styles.css">
 </head>
 
 <body>
 
-<header>
-  <h1>About Us</h1>
+<header class="topbar">
+  <div class="left">
+    <span class="back-btn" onclick="goBack()">←</span>
+  </div>
+
+  <div class="center">
+    <h1>About Us</h1>
+  </div>
+
+  <div class="right">
+    <span class="profile-icon">👤</span>
+  </div>
 </header>
 
-<div class="hero">
-  <p>Smart Energy Meter monitors electricity usage and predicts future consumption.</p>
-</div>
+<section class="about-page">
 
+  <div class="about-banner">
+    <h2>What is Smart Energy Meter?</h2>
+  </div>
+
+  <div class="about-layout">
+
+    <div class="about-left">
+      <img src="../images/hardware.jpg" alt="Smart Energy Meter Hardware Module">
+
+      
+      
+      <h4>Smart Energy Meter</h4>
+      <p>ESP32, Current Sensor, LCD Display and Breadboard Setup</p>
+    </div>
+
+    <div class="about-right">
+
+      <p>
+        The Smart Energy Meter project is developed to monitor electricity
+        consumption in real-time using sensors, ESP32 microcontroller,
+        and web dashboard technology.
+      </p>
+
+      <p>
+        The hardware module consists of ESP32, ACS712 current sensor,
+        16x2 LCD display, breadboard, and connecting wires.
+      </p>
+
+      <p>
+        The system continuously collects live data such as current,
+        power consumption, and total energy units used by connected appliances.
+      </p>
+
+      <p>
+        Based on the real-time readings, the meter automatically calculates
+        electricity bill cost according to tariff rates and predicts future
+        monthly expenses using AI/ML logic.
+      </p>
+
+      <p>
+        This system helps users reduce electricity wastage, save money,
+        identify abnormal energy usage, and improve overall efficiency.
+      </p>
+
+      <p>
+        Users can access live data remotely through dashboard panels,
+        reports, and smart analytics from anywhere.
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+<script src="../js/main.js"></script>
 </body>
 </html>
